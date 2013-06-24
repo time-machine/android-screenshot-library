@@ -1,6 +1,6 @@
 package com.github.rtyley.android.screenshot.paparazzo;
 
-//
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 
@@ -8,7 +8,7 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.MultiLineReceiver;
 import com.android.ddmlib.RawImage;
 import com.github.rtyley.android.screenshot.paparazzo.processors.ScreenshotProcessor;
-//
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +40,18 @@ public class OnDemandScreenshotService {
     logListenerCommandShell.activate();
   }
 
-  //
+  /**
+   * Stop receiving and acting on paparazzo requests.
+   * This class is not re-usable after finish() is called.
+   */
+  public void finish() {
+    if (logListenerCommandShell != null) {
+      logListenerCommandShell.cancelled = true;
+    }
+    for (ScreenshotProcessor screenshotProcessor : processors) {
+      screenshotProcessor.finish();
+    }
+  }
 
   private class LogCatCommandExecutor implements Runnable {
     /**
@@ -101,7 +112,11 @@ public class OnDemandScreenshotService {
     }
 
     Map<String, String> keyValueMap = keyValueMapFor(logLine);
-    // todo: -
+    BufferedImage image = bufferedImageFrom(rawImage);
+
+    for (ScreenshotProcessor screenshotProcessor : processors) {
+      screenshotProcessor.process(image, keyValueMap);
+    }
   }
 
   // expect log line to have kk=vv,kk=vv
@@ -115,5 +130,20 @@ public class OnDemandScreenshotService {
       }
     }
     return keyValueMap;
+  }
+
+  private static BufferedImage bufferedImageFrom(RawImage rawImage) {
+    BufferedImage image = new BufferedImage(rawImage.width, rawImage.height,
+        TYPE_INT_ARGB);
+
+    int index = 0;
+    int bytesPerPixel = rawImage.bpp >> 3;
+    for (int y = 0; y < rawImage.height; y++) {
+      for (int x = 0; x < rawImage.width; x++) {
+        image.setRGB(x, y, rawImage.getARGB(index) | 0xff000000);
+        index += bytesPerPixel;
+      }
+    }
+    return image;
   }
 }
