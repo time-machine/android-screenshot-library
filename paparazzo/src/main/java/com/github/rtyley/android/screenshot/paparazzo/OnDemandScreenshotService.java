@@ -60,7 +60,7 @@ public class OnDemandScreenshotService {
      * it doesn't even have the 'screenshot_request' tag we're interested in.
      */
     private final static String LOGCAT_COMMAND =
-        "logcat -b main screenshot_request:D *:S";
+        "logcat -v raw -b main screenshot_request:D *:S";
 
     @Override
     public void run() {
