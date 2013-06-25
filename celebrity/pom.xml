@@ -9,7 +9,6 @@
   <artifactId>android-screenshot-celebrity</artifactId>
   <name>Android Screenshot library - Celebrity</name>
   <packaging>jar</packaging>
-  <!-- <url>http://maven.apache.org</url> -->
   <dependencies>
     <dependency>
       <groupId>com.google.android</groupId>
