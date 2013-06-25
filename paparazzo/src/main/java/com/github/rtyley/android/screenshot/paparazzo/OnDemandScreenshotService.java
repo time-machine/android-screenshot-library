@@ -126,13 +126,15 @@ public class OnDemandScreenshotService {
    * {foo=bar,name=ARandomName}
    */
   private Map<String, String> keyValueMapFor(String logLine) {
-    // todo: -
     Map<String, String> keyValueMap = new HashMap<String, String>();
-    for (String keyValuePair : logLine.split(",")) {
-      int separatorIndex = keyValuePair.indexOf("=");
-      if (separatorIndex > 0) {
-        keyValueMap.put(keyValuePair.substring(0, separatorIndex),
-            keyValuePair.substring(separatorIndex));
+    if (logLine.startsWith("{") && logLine.endsWith("}")) {
+      for (String keyValuePair : logLine.substring(1, logLine.length() - 1)
+          .split(",")) {
+        int separatorIndex = keyValuePair.indexOf("=");
+        if (separatorIndex > 0) {
+          keyValueMap.put(keyValuePair.substring(0, separatorIndex),
+              keyValuePair.substring(separatorIndex));
+        }
       }
     }
     return keyValueMap;
