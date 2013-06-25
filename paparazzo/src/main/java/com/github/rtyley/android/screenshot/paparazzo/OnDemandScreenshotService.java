@@ -119,8 +119,14 @@ public class OnDemandScreenshotService {
     }
   }
 
-  // expect log line to have kk=vv,kk=vv
+  /**
+   * Parse the logline into key-value pairs. The logline format is
+   * comma-separarated key-value pairs surrounded by curly braces, ie:
+   *
+   * {foo=bar,name=ARandomName}
+   */
   private Map<String, String> keyValueMapFor(String logLine) {
+    // todo: -
     Map<String, String> keyValueMap = new HashMap<String, String>();
     for (String keyValuePair : logLine.split(",")) {
       int separatorIndex = keyValuePair.indexOf("=");
