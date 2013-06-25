@@ -46,7 +46,7 @@ public class OnDemandScreenshotService {
    */
   public void finish() {
     if (logListenerCommandShell != null) {
-      logListenerCommandShell.cancelled = true;
+      logListenerCommandShell.cancel();
     }
     for (ScreenshotProcessor screenshotProcessor : processors) {
       screenshotProcessor.finish();
@@ -81,13 +81,17 @@ public class OnDemandScreenshotService {
       activated = true;
     }
 
+    public synchronized void cancel() {
+      cancelled = true;
+    }
+
     @Override
     public boolean isCancelled() {
       return cancelled;
     }
 
     @Override
-    public void processNewLines(String[] lines) {
+    public synchronized void processNewLines(String[] lines) {
       if (!activated || cancelled) {
         return;
       }
